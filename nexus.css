@@ -122,10 +122,12 @@ Yellow: #D19C1D
     max-height: 450px;
 }
 
-.copy-btn {
+.copy-btn, .send-btn {
     font-size: 14px;
     padding: 5px;
     background-color: #30475E;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .target-btn {

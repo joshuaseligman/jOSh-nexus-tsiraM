@@ -7,7 +7,7 @@ use petgraph::graph::{NodeIndex};
 
 use std::collections::HashMap;
 use std::fmt;
-use web_sys::{Document, Window, Element, DomTokenList};
+use web_sys::{Document, Window, Element, DomTokenList, HtmlTextAreaElement};
 use wasm_bindgen::{prelude::Closure, JsCast};
 use wasm_bindgen::prelude::*;
 
@@ -1340,14 +1340,39 @@ impl CodeGenerator6502 {
         copy_btn.set_inner_html("Copy to Clipboard");
         copy_btn.set_class_name("copy-btn");
         display_area_div.append_child(&copy_btn).expect("Should be able to add the child node");
+        
+        let copy_code_str: String = code_str.to_owned();
 
         // Create a function that will be used as the event listener and add it to the copy button
         let copy_btn_fn: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
             // Call the JS function that handles the clipboard
-            set_clipboard(&code_str);
+            set_clipboard(&copy_code_str);
         }) as Box<dyn FnMut()>);
         copy_btn.add_event_listener_with_callback("click", copy_btn_fn.as_ref().unchecked_ref()).expect("Should be able to add the event listener");
         copy_btn_fn.forget();
+
+        // This is the button to send the code to jOSh
+        let send_btn: Element = document.create_element("button").expect("Should be able to create the element");
+        send_btn.set_inner_html("Send to jOSh");
+        send_btn.set_class_name("send-btn");
+        display_area_div.append_child(&send_btn).expect("Should be able to add the child node");
+
+        let send_code_str: String = code_str.to_owned();
+
+        // Create a function that will be used as the event listener and add it to the send button
+        let send_btn_fn: Closure<dyn FnMut()> = Closure::wrap(Box::new(move || {
+            // Start by getting the code text area
+            let code_area: HtmlTextAreaElement = document
+                .get_element_by_id("taProgramInput")
+                .expect("Should be able to get the element")
+                .dyn_into::<HtmlTextAreaElement>()
+                .expect("Should be able to recognize element as textarea");
+
+            // And set the value of the text area to be the program code
+            code_area.set_value(&send_code_str);
+        }) as Box<dyn FnMut()>);
+        send_btn.add_event_listener_with_callback("click", send_btn_fn.as_ref().unchecked_ref()).expect("Should be able to add the event listener");
+        send_btn_fn.forget();
 
         // Add the div to the pane
         content_area.append_child(&display_area_div).expect("Should be able to add the child node");
