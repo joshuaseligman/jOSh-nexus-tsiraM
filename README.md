@@ -14,7 +14,7 @@ This repository contains a culmination of my work over 3 semesters in Computer O
 1. Compile tsiraM and jOSh by running `tsc` from the project's root directory.
 2. Compile Nexus by running `make`/`make build` from the project's root directory.
 3. Spin up a web server by running `make run` from the project's root directory.
-4. Open up a modern web browser (Firefox and Chrome are recommended) to *localhost:3000* (or whatever port the server is running on in case port 3000 is already in use).
+4. Open up a modern and updated web browser (Firefox and Chrome are recommended) to *localhost:3000* (or whatever port the server is running on in case port 3000 is already in use).
 
 ## More Information
 * [jOSh](https://github.com/joshuaseligman/jOSh)
