@@ -1,0 +1,152 @@
+/*
+https://colorhunt.co/palette/f5f5f5f0545430475e121212
+White: #F5F5F5
+Red: #F05454
+Blue: #30475E
+Black: #121212
+
+// Generated from coolors.co based on other colors in the palette
+Green: #70AE6E
+Yellow: #D19C1D
+*/
+
+#nexus-pane, #nexus-pane textarea {
+    color: #121212;
+    background-color: #F5F5F5;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#nexus-pane button:not(.nav-link), #nexus-pane select {
+    border: 0px;
+    color: #F5F5F5;
+    font-size: 14px;
+    padding: 2px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#nexus-pane button:hover:not(.nav-link), #nexus-pane select:hover {
+    cursor: pointer;
+}
+
+#compile-btn, #tests, #reset-btn {
+    background-color: #30475E;
+}
+
+#clear-btn, #load-test-btn {
+    background-color: #F05454;
+}
+
+#title-area {
+    text-align: center;
+}
+
+#nexus-pane textarea {
+    resize: none;
+}
+
+#code-input {
+    font-size: 12px;
+    height: 350px;
+}
+
+#nexus-log-area {
+    font-size: 11px;
+    height: 350px;
+}
+
+#nexus-log-area {
+    border: 1px solid #121212;
+}
+
+#nexus-log-area p {
+    margin: 0;
+}
+
+.error {
+    color: #F05454;
+}
+
+.warning {
+    color: #D19C1D;
+}
+
+#top-bar, #bottom-bar {
+    margin-bottom: 10px;
+}
+
+.verbose, .simple {
+    cursor: pointer;
+    color: #F5F5F5;
+    outline: 1px solid #121212;
+}
+
+.verbose {
+    background-color: #70AE6E;
+}
+
+.simple {
+    background-color: #F05454;
+}
+
+#cst-area, #ast-area, #code-gen-area {
+    width: 95%;
+    margin: 2.5%;
+}
+
+#cst-tab-content, #ast-tab-content, #code-gen-tab-content {
+    margin-top: 1.5%;
+}
+
+.cst-pane *, .ast-pane svg, .ast-pane textarea {
+    height: 450px;
+}
+
+.cst-svg-div svg, .ast-svg-div svg {
+    border: 1px solid #121212;
+}
+
+.cst-svg-div svg:hover, .ast-svg-div svg:hover {
+    cursor: grab;
+}
+
+.cst-svg-div svg:active, .ast-svg-div svg:active {
+    cursor: grabbing;
+}
+
+.symbol-table-area {
+    text-align: center;
+}
+
+.code-text {
+    text-align: justify !important;
+    max-height: 450px;
+}
+
+.copy-btn {
+    font-size: 14px;
+    padding: 5px;
+    background-color: #30475E;
+}
+
+.target-btn {
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 40%;
+}
+
+.target-input + .target-btn {
+    background-color: #F05454;
+    color: #F5F5F5;
+    border-radius: 0;
+}
+
+.target-input:hover + .target-btn {
+    background-color: #F05454;
+    color: #F5F5F5;
+    cursor: pointer;
+}
+
+.target-input:checked + .target-btn {
+    background-color: #70AE6E;
+    color: #F5F5F5;
+}

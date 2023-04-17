@@ -1,6 +1,6 @@
 /* TSOS.css */
 
-body {
+#jOSh-pane {
   background-color: #111111; /* From https://clrs.cc */
   color: #2ECC40; /* From https://clrs.cc */
   font-family: 'Courier New', Courier, monospace;
@@ -9,20 +9,20 @@ body {
   font-style: normal;
 }
 
-h1 {
+#jOSh-pane h1 {
   font-size: 24pt;
   font-weight: normal;
   font-style: normal;
   border-bottom: 1px solid #2ECC40;
 }
 
-h2 {
+#jOSh-pane h2 {
   font-size: 20pt;
   font-weight: normal;
   font-style: normal;
 }
 
-h3 {
+#jOSh-pane h3 {
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 16pt;
   font-weight: normal;
@@ -134,7 +134,7 @@ h3 {
   color: #0074D9; /* From https://clrs.cc */
 }
 
-textarea {
+#jOSh-pane textarea {
   background-color: #111111;
   color: #2ECC40;
   font-family: 'Courier New', Courier, monospace;
@@ -143,7 +143,7 @@ textarea {
   resize: none;
 }
 
-textarea:focus {
+#jOSh-pane textarea:focus {
   outline: none;
 }
 
@@ -151,7 +151,7 @@ textarea:focus {
   border: 1px solid #0074D9;
 }
 
-hr {
+#jOSh-pane hr {
   border-color: #2ECC40;
 }
 

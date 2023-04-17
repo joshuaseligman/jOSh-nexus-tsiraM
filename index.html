@@ -3,7 +3,17 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <meta name="author"             content="Alan G. Labouseur" />
-   <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <script src="/lib/d3.js"></script>
+   <script src="/lib/d3-graphviz.js"></script>
+   <script type="module" src="index.js"></script>
+
+   <link href="/lib/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="tsos.css">
+   <link rel="stylesheet" href="nexus.css">
    <title>
       TSOS - a browser-based virtual Operating System in TypeScript
    </title>
@@ -55,180 +65,284 @@
 </head>
 
 <body onload="onDocumentLoad()">
-
-<div id="divMain" style="width:100%;">
-   <div id="divButtonBar">
-      <input type="button"
-             id = "btnStartOS"
-             class="normal_button"
-             name="brnStartOS"
-             value="Start"
-             tabindex="0"
-             onclick="TSOS.Control.hostBtnStartOS_click(this);">
-
-      <input type="button"
-             id = "btnHaltOS"
-             class="normal_button"
-             name="brnHaltOS"
-             disabled="disabled"
-             value="Halt"
-             tabindex="1"
-             onclick="TSOS.Control.hostBtnHaltOS_click(this);">
-
-      <input type="button"
-             id = "btnReset"
-             class="normal_button"
-             name="brnReset"
-             disabled="disabled"
-             value="Reset"
-             tabindex="2"
-             onclick="TSOS.Control.hostBtnReset_click(this);">
-
-      <select id="testOptions">
-      </select>
-
-      <input type="button"
-             id = "btnRunTest"
-             class="normal_button"
-             name="brnRunTest"
-             disabled="disabled"
-             value="Run Test"
-             tabindex="3"
-             onclick="TSOS.Control.hostBtnRunTest_click(this)">            
-   </div>
-
-   <div id="statusBar">
-      <p>Date: <span id="date"></span></p>
-      <p>Status: <span id="status"></span></p>
-   </div>
-
-   <div id="centerArea">
-      <div id="divConsole" style="width:400px; height:500px">
-         <label>
-            jOSh Console
-            <br>
-            <canvas id="display"
-                  width="400px"
-                  height="500px"
-                  tabindex="3">
-            </canvas>
-         </label>
-      </div>
-   
-      <div id="logAndInput">
-         <div id="divLog">
-            <label>
-               Host Log
-               <br>
-               <textarea name="taHostLog"
-                         id  ="taHostLog"
-                         rows="26"
-                         cols="35"
-                         readonly
-               ></textarea>
-            </label>
+<ul id="tabs" class="nav nav-tabs" role="tablist">
+   <li class="nav-item" role="presentation">
+      <button class="nav-link active" aria-selected="true" id="jOSh-btn" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#jOSh-pane" aria-controls="jOSh-pane">jOSh</button>
+   </li>
+   <li class="nav-item" role="presentation">
+      <button class="nav-link" aria-selected="false" id="nexus-btn" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#nexus-pane" aria-controls="nexus-pane">Nexus</button>
+   </li>
+</ul>
+<div id="tabs-area" class="tab-content">
+   <div id="jOSh-pane" class="tab-pane show active" role="tabpanel" tabindex="0" aria-labelledby="jOSh-btn">
+      <div id="divMain" style="width:100%;">
+         <div id="divButtonBar">
+            <input type="button"
+                   id = "btnStartOS"
+                   class="normal_button"
+                   name="brnStartOS"
+                   value="Start"
+                   tabindex="0"
+                   onclick="TSOS.Control.hostBtnStartOS_click(this);">
+      
+            <input type="button"
+                   id = "btnHaltOS"
+                   class="normal_button"
+                   name="brnHaltOS"
+                   disabled="disabled"
+                   value="Halt"
+                   tabindex="1"
+                   onclick="TSOS.Control.hostBtnHaltOS_click(this);">
+      
+            <input type="button"
+                   id = "btnReset"
+                   class="normal_button"
+                   name="brnReset"
+                   disabled="disabled"
+                   value="Reset"
+                   tabindex="2"
+                   onclick="TSOS.Control.hostBtnReset_click(this);">
+      
+            <select id="testOptions">
+            </select>
+      
+            <input type="button"
+                   id = "btnRunTest"
+                   class="normal_button"
+                   name="brnRunTest"
+                   disabled="disabled"
+                   value="Run Test"
+                   tabindex="3"
+                   onclick="TSOS.Control.hostBtnRunTest_click(this)">            
          </div>
       
-         <div id="divUserProgramInput">
-            <label>
-               User Program Input
-               <br>
-               <textarea name="taProgramInput"
-                         id  ="taProgramInput"
-                         rows="8"
-                         cols="35"
-               ></textarea>
-            </label>
+         <div id="statusBar">
+            <p>Date: <span id="date"></span></p>
+            <p>Status: <span id="status"></span></p>
          </div>
-      </div>
-   
-      <div id="cpuPcbMemDiv">
-         <div id="singleStepDiv">
-            <button id="toggleSingleStepBtn" class="singleStepBtn normal_button" onclick="TSOS.Control.toggleSingleStep()">Toggle Single Step</button>
-            <button id="stepBtn" class="singleStepBtn normal_button" onclick="TSOS.Control.nextStep()" disabled>Step</button>
-         </div>
-
-         <p id="algoLine">Scheduling Algorithm: <span id="algoVal">RR</span></p>
-         <p id="quantumLine">Quantum (q = <span id="quantumVal">6</span>) (current = <span id="currentQuantumVal">0</span>)</p>
-
-         <h3>CPU Status</h3>
-         <table id="cpuTable">
-            <tr>
-               <th>State</th>
-               <th>PC</th>
-               <th>IR</th>
-               <th>ACC</th>
-               <th>X</th>
-               <th>Y</th>
-               <th>Z</th>
-            </tr>
-            <tr>
-               <td id="cpuPipelineState">N/A</td>
-               <td id="cpuPC">00</td>
-               <td id="cpuIR">00</td>
-               <td id="cpuAcc">00</td>
-               <td id="cpuXReg">00</td>
-               <td id="cpuYReg">00</td>
-               <td id="cpuZFlag">0</td>
-            </tr>
-         </table>
-
-         <hr />
+      
+         <div id="centerArea">
+            <div id="divConsole" style="width:400px; height:500px">
+               <label>
+                  jOSh Console
+                  <br>
+                  <canvas id="display"
+                        width="400px"
+                        height="500px"
+                        tabindex="3">
+                  </canvas>
+               </label>
+            </div>
          
-         <h3>Process Control Block Table</h3>
-         <div id="pcbDiv">
-            <table id="pcbTable">
-               <tr>
-                  <th>PID</th>
-                  <th>Priority</th>
-                  <th>Location</th>
-                  <th>Seg</th>
-                  <th>Base</th>
-                  <th>Limit</th>
-                  <th>PC</th>
-                  <th>IR</th>
-                  <th>ACC</th>
-                  <th>X</th>
-                  <th>Y</th>
-                  <th>Z</th>
-                  <th>Status</th>
-               </tr>
-            </table>
+            <div id="logAndInput">
+               <div id="divLog">
+                  <label>
+                     Host Log
+                     <br>
+                     <textarea name="taHostLog"
+                               id  ="taHostLog"
+                               rows="26"
+                               cols="35"
+                               readonly
+                     ></textarea>
+                  </label>
+               </div>
+            
+               <div id="divUserProgramInput">
+                  <label>
+                     User Program Input
+                     <br>
+                     <textarea name="taProgramInput"
+                               id  ="taProgramInput"
+                               rows="8"
+                               cols="35"
+                     ></textarea>
+                  </label>
+               </div>
+            </div>
+         
+            <div id="cpuPcbMemDiv">
+               <div id="singleStepDiv">
+                  <button id="toggleSingleStepBtn" class="singleStepBtn normal_button" onclick="TSOS.Control.toggleSingleStep()">Toggle Single Step</button>
+                  <button id="stepBtn" class="singleStepBtn normal_button" onclick="TSOS.Control.nextStep()" disabled>Step</button>
+               </div>
+      
+               <p id="algoLine">Scheduling Algorithm: <span id="algoVal">RR</span></p>
+               <p id="quantumLine">Quantum (q = <span id="quantumVal">6</span>) (current = <span id="currentQuantumVal">0</span>)</p>
+      
+               <h3>CPU Status</h3>
+               <table id="cpuTable">
+                  <tr>
+                     <th>State</th>
+                     <th>PC</th>
+                     <th>IR</th>
+                     <th>ACC</th>
+                     <th>X</th>
+                     <th>Y</th>
+                     <th>Z</th>
+                  </tr>
+                  <tr>
+                     <td id="cpuPipelineState">N/A</td>
+                     <td id="cpuPC">00</td>
+                     <td id="cpuIR">00</td>
+                     <td id="cpuAcc">00</td>
+                     <td id="cpuXReg">00</td>
+                     <td id="cpuYReg">00</td>
+                     <td id="cpuZFlag">0</td>
+                  </tr>
+               </table>
+      
+               <hr />
+               
+               <h3>Process Control Block Table</h3>
+               <div id="pcbDiv">
+                  <table id="pcbTable">
+                     <tr>
+                        <th>PID</th>
+                        <th>Priority</th>
+                        <th>Location</th>
+                        <th>Seg</th>
+                        <th>Base</th>
+                        <th>Limit</th>
+                        <th>PC</th>
+                        <th>IR</th>
+                        <th>ACC</th>
+                        <th>X</th>
+                        <th>Y</th>
+                        <th>Z</th>
+                        <th>Status</th>
+                     </tr>
+                  </table>
+               </div>
+      
+               <hr />
+      
+               <h3>Memory</h3>
+               <div id="memDiv">
+                  <table id="memTable">
+                  </table>
+               </div>
+            </div>
          </div>
-
-         <hr />
-
-         <h3>Memory</h3>
-         <div id="memDiv">
-            <table id="memTable">
-            </table>
+      
+         <div id="diskDiv">
+            <h3>Disk</h3>
+            <div id="diskTableDiv">
+               <table id="diskTable">
+                  <td>The disk has not been formatted.</td>
+               </table>
+            </div>
          </div>
+         
       </div>
-   </div>
-
-   <div id="diskDiv">
-      <h3>Disk</h3>
-      <div id="diskTableDiv">
-         <table id="diskTable">
-            <td>The disk has not been formatted.</td>
-         </table>
+      
+      <div id="seeYaArea">
+         <!-- Gif made on makeagif.com from https://www.youtube.com/watch?v=3xmexYvakxE -->
+         <img src="os-dist/images/seeYa.gif">
       </div>
+      
+      <p class="footerText" style="clear:both;">
+         <br>
+         Copyright &copy; 2008 - 2019 No Rights Reserved.
+         <br>
+         Reproduction is inhibited without the express written consent of
+         Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
+      </p>
    </div>
-   
+   <div id="nexus-pane" class="tab-pane" role="tabpanel" tabindex="0" aria-labelledby="nexus-btn">
+      <div id="title-area">
+         <h1>Nexus Compiler</h1>
+         <h3>Josh Seligman</h3>
+     </div>
+     <br />
+     <div id="top-area" class="container">
+         <div id="top-bar" class="row align-items-center gx-5">
+             <div id="test-area" class="col">
+                 <div class="row justify-content-evenly">
+                     <select id="tests" class="col-6"></select>
+                     <button id="load-test-btn" class="col-3">Load Test</button>
+                 </div>
+             </div>
+             <div id="basic-btns" class="col">
+                 <div class="row justify-content-evenly">
+                     <button id="compile-btn" class="col-3">Compile</button>
+                     <button id="clear-btn" class="col-3">Clear Output</button>
+                     <button id="reset-btn" class="col-3">Reset</button>
+                 </div>
+             </div>
+         </div>
+         <div id="bottom-bar" class="row align-items-center gx-5">
+             <div id="bottom-bar-left" class="col container justify-content-center">
+                 <div class="row align-items-center text-center">
+                     <p>Target</p>
+                 </div>
+                 <div class="row text-center">
+                     <input type="radio" class="target-input btn-check col" name="options-target" id="target-6502" autocomplete="off" checked>
+                     <label class="btn target-btn" for="target-6502">6502</label>
+ 
+                     <input type="radio" class="target-input btn-check col" name="options-target" id="target-riscv" autocomplete="off">
+                     <label class="btn target-btn" for="target-riscv">RISC-V</label>
+                 </div>
+             </div>
+             <div id="log-mode-area" class="col container">
+                 <div class="row align-items-center text-center">
+                     <p class="col">Nexus</p>
+                     <p class="col">Lexer</p>
+                     <p class="col">Parser</p>
+                     <p class="col">Semantic Analyzer</p>
+                     <p class="col">Code Generator</p>
+                 </div>
+                 <div class="row align-items-center text-center">
+                     <p class="verbose col" id="nexus-log-mode">Verbose</p>
+                     <p class="verbose col" id="lexer-log-mode">Verbose</p>
+                     <p class="verbose col" id="parser-log-mode">Verbose</p>
+                     <p class="verbose col" id="semantic-log-mode">Verbose</p>
+                     <p class="verbose col" id="codegen-log-mode">Verbose</p>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <div id="main-area" class="container">
+         <div class="row gx-5">
+             <div class="col-6">
+                 <div id="code-input"></div>
+             </div>
+             <div id="nexus-log-area" class="col-6 overflow-auto">
+                 <!-- <textarea id="nexus-log-area" readonly></textarea> -->
+             </div>
+         </div>
+     </div>
+     <br />
+     <h2 style="text-align: center;">Concrete Syntax Tree</h2>
+     <div id="cst-area">
+         <ul class="nav nav-tabs" id="cst-tabs" role="tablist">
+         </ul>
+         <div class="tab-content" id="cst-tab-content">
+         </div>
+     </div>
+     <br />
+     <h2 style="text-align: center;">Abstract Syntax Tree and Symbol Table</h2>
+     <div id="ast-area">
+         <ul class="nav nav-tabs" id="ast-tabs" role="tablist">
+         </ul>
+         <div class="tab-content" id="ast-tab-content">
+         </div>
+     </div>
+     <br />
+     <h2 style="text-align: center;">Code Generation</h2>
+     <div id="code-gen-area">
+         <ul class="nav nav-tabs" id="code-gen-tabs" role="tablist">
+         </ul>
+         <div class="tab-content" id="code-gen-tab-content">
+         </div>
+     </div>
+   </div>
 </div>
-
-<div id="seeYaArea">
-   <!-- Gif made on makeagif.com from https://www.youtube.com/watch?v=3xmexYvakxE -->
-   <img src="distrib/images/seeYa.gif">
-</div>
-
-<p class="footerText" style="clear:both;">
-   <br>
-   Copyright &copy; 2008 - 2019 No Rights Reserved.
-   <br>
-   Reproduction is inhibited without the express written consent of
-   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
-</p>
-
+<script src="/lib/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+   // Quickly set up the text editor
+   let editor = ace.edit("code-input");
+</script>
+<script src="/lib/bootstrap.bundle.min.js"></script>
 </body>
 </html>
