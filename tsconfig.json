@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target"              : "ES2017",
+      "rootDir"             : "os-src",
+      "outDir"              : "os-dist",
+      "sourceMap"           : true,
+      "extendedDiagnostics" : true,
+      "listEmittedFiles"    : true
+    },
+
+    "include": [
+        "os-src/**/*"
+    ],
+}

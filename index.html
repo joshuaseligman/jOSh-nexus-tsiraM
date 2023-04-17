@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+   <meta name="author"             content="Alan G. Labouseur" />
+   <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
+   <title>
+      TSOS - a browser-based virtual Operating System in TypeScript
+   </title>
+
+   <!-- Globals CONSTANTS and _Variables. Must included be first. -->
+   <script type="text/javascript" src="os-dist/globals.js"></script>
+
+   <!-- Host (Virtual Machine / Hardware Simulation) Routines -->
+   <script type="text/javascript" src="os-dist/host/control.js"></script>
+   <script type="text/javascript" src="os-dist/host/devices.js"></script>
+   <script type="text/javascript" src="os-dist/host/cpu.js"></script>
+   <script type="text/javascript" src="os-dist/host/alu.js"></script>
+   <script type="text/javascript" src="os-dist/host/memory.js"></script>
+   <script type="text/javascript" src="os-dist/host/memoryAccessor.js"></script>
+
+   <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
+   <script type="text/javascript" src="os-dist/os/interrupt.js"></script>
+   <script type="text/javascript" src="os-dist/os/canvastext.js"></script>
+   <script type="text/javascript" src="os-dist/os/console.js"></script>
+   <script type="text/javascript" src="os-dist/os/deviceDriver.js"></script>
+   <script type="text/javascript" src="os-dist/os/deviceDriverKeyboard.js"></script>
+   <script type="text/javascript" src="os-dist/os/queue.js"></script>
+   <script type="text/javascript" src="os-dist/os/shell.js"></script>
+   <script type="text/javascript" src="os-dist/os/shellCommand.js"></script>
+   <script type="text/javascript" src="os-dist/os/userCommand.js"></script>
+   <script type="text/javascript" src="os-dist/os/kernel.js"></script>
+   <script type="text/javascript" src="os-dist/os/stack.js"></script>
+   <script type="text/javascript" src="os-dist/os/processControlBlock.js"></script>
+   <script type="text/javascript" src="os-dist/os/scheduler.js"></script>
+   <script type="text/javascript" src="os-dist/os/dispatcher.js"></script>
+   <script type="text/javascript" src="os-dist/os/memoryManager.js"></script>
+   <script type="text/javascript" src="os-dist/os/diskSystemDeviceDriver.js"></script>
+   <script type="text/javascript" src="os-dist/os/swapper.js"></script>
+
+   <script type="text/javascript" src="os-dist/host/imp/pipelineState.js"></script>
+   <script type="text/javascript" src="os-dist/host/imp/fetchState.js"></script>
+   <script type="text/javascript" src="os-dist/host/imp/decodeState.js"></script>
+   <script type="text/javascript" src="os-dist/host/imp/executeState.js"></script>
+   <script type="text/javascript" src="os-dist/host/imp/writebackState.js"></script>
+   <script type="text/javascript" src="os-dist/host/imp/memoryState.js"></script>
+
+   <!-- Other Routines -->
+   <script type="text/javascript" src="os-dist/utils.js"></script>
+   <!-- Uncomment the line below to enable GLaDOS testing. -->
+   <!-- <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip4.js"></script> -->
+   <!-- script type="text/javascript" src="test/jOSh-ip4.js"></script> -->
+   <script type="text/javascript" src="os-test/gladosV2.js"></script>
+   
+</head>
+
+<body onload="onDocumentLoad()">
+
+<div id="divMain" style="width:100%;">
+   <div id="divButtonBar">
+      <input type="button"
+             id = "btnStartOS"
+             class="normal_button"
+             name="brnStartOS"
+             value="Start"
+             tabindex="0"
+             onclick="TSOS.Control.hostBtnStartOS_click(this);">
+
+      <input type="button"
+             id = "btnHaltOS"
+             class="normal_button"
+             name="brnHaltOS"
+             disabled="disabled"
+             value="Halt"
+             tabindex="1"
+             onclick="TSOS.Control.hostBtnHaltOS_click(this);">
+
+      <input type="button"
+             id = "btnReset"
+             class="normal_button"
+             name="brnReset"
+             disabled="disabled"
+             value="Reset"
+             tabindex="2"
+             onclick="TSOS.Control.hostBtnReset_click(this);">
+
+      <select id="testOptions">
+      </select>
+
+      <input type="button"
+             id = "btnRunTest"
+             class="normal_button"
+             name="brnRunTest"
+             disabled="disabled"
+             value="Run Test"
+             tabindex="3"
+             onclick="TSOS.Control.hostBtnRunTest_click(this)">            
+   </div>
+
+   <div id="statusBar">
+      <p>Date: <span id="date"></span></p>
+      <p>Status: <span id="status"></span></p>
+   </div>
+
+   <div id="centerArea">
+      <div id="divConsole" style="width:400px; height:500px">
+         <label>
+            jOSh Console
+            <br>
+            <canvas id="display"
+                  width="400px"
+                  height="500px"
+                  tabindex="3">
+            </canvas>
+         </label>
+      </div>
+   
+      <div id="logAndInput">
+         <div id="divLog">
+            <label>
+               Host Log
+               <br>
+               <textarea name="taHostLog"
+                         id  ="taHostLog"
+                         rows="26"
+                         cols="35"
+                         readonly
+               ></textarea>
+            </label>
+         </div>
+      
+         <div id="divUserProgramInput">
+            <label>
+               User Program Input
+               <br>
+               <textarea name="taProgramInput"
+                         id  ="taProgramInput"
+                         rows="8"
+                         cols="35"
+               ></textarea>
+            </label>
+         </div>
+      </div>
+   
+      <div id="cpuPcbMemDiv">
+         <div id="singleStepDiv">
+            <button id="toggleSingleStepBtn" class="singleStepBtn normal_button" onclick="TSOS.Control.toggleSingleStep()">Toggle Single Step</button>
+            <button id="stepBtn" class="singleStepBtn normal_button" onclick="TSOS.Control.nextStep()" disabled>Step</button>
+         </div>
+
+         <p id="algoLine">Scheduling Algorithm: <span id="algoVal">RR</span></p>
+         <p id="quantumLine">Quantum (q = <span id="quantumVal">6</span>) (current = <span id="currentQuantumVal">0</span>)</p>
+
+         <h3>CPU Status</h3>
+         <table id="cpuTable">
+            <tr>
+               <th>State</th>
+               <th>PC</th>
+               <th>IR</th>
+               <th>ACC</th>
+               <th>X</th>
+               <th>Y</th>
+               <th>Z</th>
+            </tr>
+            <tr>
+               <td id="cpuPipelineState">N/A</td>
+               <td id="cpuPC">00</td>
+               <td id="cpuIR">00</td>
+               <td id="cpuAcc">00</td>
+               <td id="cpuXReg">00</td>
+               <td id="cpuYReg">00</td>
+               <td id="cpuZFlag">0</td>
+            </tr>
+         </table>
+
+         <hr />
+         
+         <h3>Process Control Block Table</h3>
+         <div id="pcbDiv">
+            <table id="pcbTable">
+               <tr>
+                  <th>PID</th>
+                  <th>Priority</th>
+                  <th>Location</th>
+                  <th>Seg</th>
+                  <th>Base</th>
+                  <th>Limit</th>
+                  <th>PC</th>
+                  <th>IR</th>
+                  <th>ACC</th>
+                  <th>X</th>
+                  <th>Y</th>
+                  <th>Z</th>
+                  <th>Status</th>
+               </tr>
+            </table>
+         </div>
+
+         <hr />
+
+         <h3>Memory</h3>
+         <div id="memDiv">
+            <table id="memTable">
+            </table>
+         </div>
+      </div>
+   </div>
+
+   <div id="diskDiv">
+      <h3>Disk</h3>
+      <div id="diskTableDiv">
+         <table id="diskTable">
+            <td>The disk has not been formatted.</td>
+         </table>
+      </div>
+   </div>
+   
+</div>
+
+<div id="seeYaArea">
+   <!-- Gif made on makeagif.com from https://www.youtube.com/watch?v=3xmexYvakxE -->
+   <img src="distrib/images/seeYa.gif">
+</div>
+
+<p class="footerText" style="clear:both;">
+   <br>
+   Copyright &copy; 2008 - 2019 No Rights Reserved.
+   <br>
+   Reproduction is inhibited without the express written consent of
+   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
+</p>
+
+</body>
+</html>
